@@ -6,6 +6,8 @@ var w2v = require( 'word2vec')
 var Category = require('../category/Category')
 var Tag = require('./Tag')
 
+var _ = require('lodash');
+
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({ 
 	extended: true 
@@ -30,9 +32,21 @@ router.get('/', function (req, res) {
 //suggested tag
 router.get('/suggested', function(req,res){
 	w2v.loadModel( 'simplood.txt', function( error, model ) {
-        return res.status(200).send({
-            code: 0,
-            mostSimilar: model.mostSimilar("hat",20)
+        var mostSimilar = model.mostSimilar(req.query.tag,20)
+        var tagNames = [];
+        _.forEach(mostSimilar, function(value, key) {
+            tagNames.push(value.word)
+        })
+
+        Tag.find({name: {$in: tagNames}}, function(err,tags){
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+            return res.status(200).send({
+                code: 0,
+                tags
+            })
         })
 	});
 })
