@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 var bodyParser = require('body-parser')
+//var w2v = require( 'word2vector') 
 
 var Category = require('../category/Category')
 var Tag = require('./Tag')
@@ -24,6 +25,16 @@ router.get('/', function (req, res) {
         })
     })
 })
+
+/*
+//suggested tag
+router.get('/suggested', function(req,res){
+	w2v.loadModel( 'simplood.txt', function( error, model ) {
+		console.log( model );
+		console.log(model.mostSimilar("hat",20));
+	});
+})
+*/
 
 //create tag
 router.post('/', function(req,res){

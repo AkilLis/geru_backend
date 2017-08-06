@@ -25,6 +25,65 @@ router.get('/', function (req, res) {
     })
 })
 
+//get projects by tag
+router.get('/get_projects_by_tag', function (req, res) {
+	Project.find({ 'tags._id': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1 ) * 8).exec(function (err, projects) {
+        if(err) return res.status(500).send({
+            code: 1,
+            message: err
+        })
+
+        return res.status(200).send({
+            code: 0,
+            projects
+        })
+    })
+})
+
+
+//get suited
+router.get('/get_suited', function (req, res) {
+/*
+
+	whois_range.aggregate([
+		{
+		  $match:
+		   {
+			 _id: "userid"
+		   }
+		},
+		{"$group" : {_id:"$tag", count:{$sum:1}}}
+	},
+	{$sort:{"count":1}}
+	],
+    function(err,result){
+		Project.find({ "_id": result.count },
+        function (err, res) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            }
+			res.forEach(function (r) {
+				r.tags.forEach(function (r) {
+					// show student with his time entries....
+					console.log(r._id);
+				});
+			});	
+            
+            
+        });
+	})
+
+	
+
+	//var a={"5986c3a964912624b089f1db": 4, "5986c38e64912624b089f1d7": 9};
+	
+	//console.log(tt);
+	
+	//return tt;
+	*/
+ })
 
 //create project
 router.post('/', function(req,res){
