@@ -4,6 +4,7 @@ var bodyParser = require('body-parser')
 
 var Project = require('./Project')
 var User = require('../user/User')
+var ProjectBid = require('../projectBid/ProjectBid')
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({ 
@@ -107,6 +108,57 @@ router.delete('/:project_id', function(req,res){
         })
       });
 
+})
+
+//get project bids by project id
+router.get('/:project_id/projectbid',function(req,res){
+    Project.findOne({_id: req.params.project_id}).exec(function(err,project){
+        if(err) return res.status(500).send({
+            code: 1,
+            message: err
+        })
+        if(!project) return res.status(500).send({
+            code: 1,
+            message: 'Project not found.'
+        })
+
+        ProjectBid.find({_id: {$in: project.projectBids}}, function(err,projectBids){
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+            return res.status(200).send({
+                code: 0,
+                projectBids
+            })
+        })
+    })
+})
+
+//close project
+router.put('/:project_id/selectbid/:projectBid_id', function(req,res){
+    Project.findOne({_id: req.params.project_id}, function(err,project){
+        if(err) return res.status(500).send({
+            code:1,
+            message: err
+        })
+        project.status = 'selected'
+        project.save(function(err){
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+        })
+
+        ProjectBid.update({_id: {$in: project.projectBids, $ne: req.params.projectBid_id}},
+             {$set: {"status": "out"}},
+             {"multi": true}, function(err){
+                if(err) return res.status(500).send({
+                    code: 1,
+                    message: err
+            })
+        })
+    })
 })
 
 module.exports = router

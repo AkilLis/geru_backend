@@ -13,8 +13,9 @@ var ProjectBidSchema = new Schema({
   project: {
     _id: String,
     title: String,
-    description: String,
-  }
+    description: String
+  },
+  status: String
 })
 
 mongoose.model('ProjectBid', ProjectBidSchema)
