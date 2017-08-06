@@ -10,6 +10,7 @@ router.use(bodyParser.urlencoded({
 	extended: true 
 }))
 
+//get tags
 router.get('/', function (req, res) {
     Tag.find({ }, function (err, tags) {
         if(err) return res.status(500).send({
@@ -24,17 +25,22 @@ router.get('/', function (req, res) {
     })
 })
 
-//create category
+//create tag
 router.post('/', function(req,res){
     Tag.create(req.body, function (err, tag) {
         if (err) return res.status(500).send({
             code: 1,
-            message: "There was a problem adding the information to the database.",
+            message: err
         })
 
         Category.findOne({_id: req.body.category._id}, function(err,category){
             if(err) return res.status(500).send({
                 code: 1,
+                message: err
+            })
+
+            if(!category) return res.status(500).send({
+                code:1,
                 message: "There is no category exists.",
             })
 
@@ -45,19 +51,20 @@ router.post('/', function(req,res){
                     code: 1,
                     message: err
                 }
-            }) 
+            })
+
+            return res.status(200).send({
+                code: 0,
+                message: "Successfully created tag: " + tag.name
+            })
 
         })
 
-        return res.status(200).send({
-        code: 0,
-        message: "Successfully created tag: " + tag.name
-        })
     })
     
 })
 
-//update category
+//update tag
 router.put('/:tag_id', function(req,res){
     Tag.findOneAndUpdate({_id: req.params.tag_id}, req.body, {new: true}, function(err, tag) {
         if (err) return res.status(500).send({

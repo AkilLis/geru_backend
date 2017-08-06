@@ -4,6 +4,7 @@ var bodyParser = require('body-parser')
 
 var User = require('./User')
 var Showcase = require('../showcase/Showcase')
+var Project = require('../project/Project')
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({ 
@@ -140,6 +141,31 @@ router.get('/:user_id/bookmark', function(req,res){
             return res.status(200).send({
                 code: 0,
                 bookmarks: showcases
+            })
+        })
+    })
+})
+
+//get user active projects
+router.get('/:user_id/project', function(req,res){
+    User.findOne({_id: req.params.user_id}, function(err,user){
+        if(err) return res.status(500).send({
+            code:1,
+            message: err
+        })
+        if(user.projects.length == 0) return res.status(200).send({
+            code: 0,
+            projects: []
+        })
+
+        Project.find({_id: {$in: user.projects}},function(err,projects){
+            if(err) return res.status(500).send({
+                code:1,
+                message: err
+            })
+            return res.status(200).send({
+                code:0,
+                projects
             })
         })
     })

@@ -5,7 +5,9 @@ var TagSchema = new Schema({
   name: {type: String, index: true},
   category: { 
   	_id: String, 
-  	name: String 
+  	name: String,
+  	type: String,
+  	cover_url: String
   }
 })
 

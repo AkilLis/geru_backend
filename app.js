@@ -8,5 +8,7 @@ app.use('/user', require('./user/UserController'))
 app.use('/showcase', require('./showcase/ShowcaseController'))
 app.use('/category', require('./category/CategoryController'))
 app.use('/tag', require('./tag/TagController'))
+app.use('/project', require('./project/ProjectController'))
+app.use('/projectBid', require('./projectBid/ProjectBidController'))
 
 module.exports = app

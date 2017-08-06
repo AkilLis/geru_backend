@@ -13,7 +13,8 @@ var UserSchema = new Schema({
   gender: String,
   password: String,
   showcases: [{ type: String, ref: 'Showcase' }],
-  bookmarks: [{ type: String, ref: 'Showcase'}]
+  bookmarks: [{ type: String, ref: 'Showcase'}],
+  projects: [{type: String, ref: 'Project'}]
 })
 
 mongoose.model('User', UserSchema)

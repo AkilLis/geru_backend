@@ -2,7 +2,7 @@ var express = require('express')
 var router = express.Router()
 var bodyParser = require('body-parser')
 
-var Showcase = require('./Showcase')
+var Project = require('./Project')
 var User = require('../user/User')
 
 router.use(bodyParser.json())
@@ -12,23 +12,23 @@ router.use(bodyParser.urlencoded({
 
 //get showcases
 router.get('/', function (req, res) {
-    Showcase.find({}, function (err, showcases) {
+    Project.find({}, function (err, projects) {
         if(err) return res.status(500).send({
             code: 1,
-            message: 'Showcase not found'
+            message: err
         })
 
         return res.status(200).send({
             code: 0,
-            showcases
+            projects
         })
     })
 })
 
 
-//create showcase
+//create project
 router.post('/', function(req,res){
-    Showcase.create(req.body, function (err, showcase) {
+    Project.create(req.body, function (err, project) {
         if (err) return res.status(500).send({
             code: 1,
             message: "There was a problem adding the information to the database.",
@@ -40,46 +40,47 @@ router.post('/', function(req,res){
                 message: "There is no user exists.",
             })
 
-            user.showcases.push(showcase._id)
+            user.projects.push(project._id)
             
             user.save(function(err) {
                 if(err) return  {
                     code: 1,
                     message: err
                 }
-            }) 
-        })
-        return res.status(200).send({
-            code: 0,
-            message: "Successfully created showcase: " + req.body.title + " for user: " + req.body.user.first_name
+            })
+
+            return res.status(200).send({
+                code: 0,
+                message: "Successfully created project: " + req.body.title + " for user: " + req.body.user.first_name
+            })
         })
     })
 })
 
-//update showcase
-router.put('/:showcase_id', function(req,res){
-    Showcase.findOneAndUpdate({_id: req.params.showcase_id}, req.body, {new: true}, function(err, showcase) {
+//update project
+router.put('/:project_id', function(req,res){
+    Project.findOneAndUpdate({_id: req.params.project_id}, req.body, {new: true}, function(err, project) {
         if (err) return res.status(500).send({
             code: 1,
             message: err
         })
         return res.status(200).send({
             code: 0,
-            message: "Successfully updated showcase: " + showcase.title
+            message: "Successfully updated project: " + project.title
         })
     });
 })
 
-//delete showcase
-router.delete('/:showcase_id', function(req,res){
+//delete project
+router.delete('/:project_id', function(req,res){
 
-    Showcase.remove({_id: req.params.showcase_id}, function(err, showcase) {
+    Project.remove({_id: req.params.project_id}, function(err, project) {
         if (err) return res.status(500).send({
             code: 1,
             message: err
         })
 
-        User.findOne({_id: showcase.user._id}, function(err,user){
+        User.findOne({_id: project.user._id}, function(err,user){
             if(err) return res.status(500).send({
                 code: 1,
                 message: err
@@ -89,21 +90,20 @@ router.delete('/:showcase_id', function(req,res){
                 message: "User not found"
             })
             var i = -1;
-            i = user.showcases.indexOf(showcase._id)
+            i = user.projects.indexOf(showcase._id)
             if(i != -1 ){
-                user.showcases.splice(i,1)
+                user.projects.splice(i,1)
                 user.save(function(err){
                     if(err) return {
                         code: 1,
                         message: err
                     }
+                    return res.status(200).send({
+                        code: 0,
+                        message: "Successfully deleted project: " + project.title
+                    })
                 })
             }
-        })
-
-        return res.status(200).send({
-            code: 0,
-            message: "Successfully deleted showcase: " + showcase.title
         })
       });
 
