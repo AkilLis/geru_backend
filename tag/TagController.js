@@ -12,7 +12,7 @@ router.use(bodyParser.urlencoded({
 
 //get tags
 router.get('/', function (req, res) {
-    Tag.find({ }, function (err, tags) {
+    Tag.find({ name: new RegExp('^'+req.query.name, "i") }, function (err, tags) {
         if(err) return res.status(500).send({
             code: 1,
             message: 'Something went wrong when fetching from database.'
@@ -77,5 +77,7 @@ router.put('/:tag_id', function(req,res){
         })
     });
 })
+
+
 
 module.exports = router
