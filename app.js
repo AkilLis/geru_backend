@@ -9,6 +9,6 @@ app.use('/category', require('./category/CategoryController'))
 app.use('/tag', require('./tag/TagController'))
 app.use('/project', require('./project/ProjectController'))
 app.use('/projectbid', require('./projectBid/ProjectBidController'))
-app.use('/projecthistory', require('./projecthistory/ProjectHistoryController'))
+app.use('/projecthistory', require('./projectHistory/ProjectHistoryController'))
 
 module.exports = app

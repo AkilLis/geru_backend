@@ -1,2 +1,2 @@
 var mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost/geru')
+mongoose.connect('mongodb://192.168.0.167/geru')
