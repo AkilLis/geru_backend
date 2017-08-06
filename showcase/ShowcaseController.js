@@ -10,12 +10,29 @@ router.use(bodyParser.urlencoded({
 	extended: true 
 }))
 
+
+
 //get showcases
 router.get('/', function (req, res) {
     Showcase.find({}, function (err, showcases) {
         if(err) return res.status(500).send({
             code: 1,
             message: 'Showcase not found'
+        })
+
+        return res.status(200).send({
+            code: 0,
+            showcases
+        })
+    })
+})
+
+//get showcases by tag id
+router.get('/tag', function (req, res) {
+	Showcase.find({ 'tags._id': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1 ) * 8).exec(function (err, showcases) {
+        if(err) return res.status(500).send({
+            code: 1,
+            message: err
         })
 
         return res.status(200).send({
