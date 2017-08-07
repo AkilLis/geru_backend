@@ -1,7 +1,8 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var UserSchema = new Schema({  
+var UserSchema = new Schema({
+  display_name: String,
   first_name: String,
   last_name: String,
   avatar_url: String,
@@ -12,6 +13,7 @@ var UserSchema = new Schema({
   type: String,
   gender: String,
   password: String,
+  is_freelancer: Boolean,
   showcases: [{ type: String, ref: 'Showcase' }],
   bookmarks: [{ type: String, ref: 'Showcase'}],
   projects: [{type: String, ref: 'Project'}]
