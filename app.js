@@ -10,5 +10,6 @@ app.use('/tag', require('./tag/TagController'))
 app.use('/project', require('./project/ProjectController'))
 app.use('/projectbid', require('./projectBid/ProjectBidController'))
 app.use('/projecthistory', require('./projectHistory/ProjectHistoryController'))
+app.use('/message', require('./message/MessageController'))
 
 module.exports = app

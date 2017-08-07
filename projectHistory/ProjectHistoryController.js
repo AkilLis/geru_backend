@@ -40,4 +40,18 @@ router.get('/:user_id/worker', function(req,res){
     })
 })
 
+//project to project history
+router.post('/', function(req,res){
+    ProjectHistory.create(req.body, function (err, projectHistory) {
+        if (err) return res.status(500).send({
+            code: 1,
+            message: err
+        })
+        return res.status(200).send({
+            code: 1,
+            message: 'Successfully saved project history.'
+        })
+    })
+})
+
 module.exports = router

@@ -29,19 +29,55 @@ router.get('/', function (req, res) {
 
 //get showcases by tag id
 router.get('/tag', function (req, res) {
-	Showcase.find({ 'tags._id': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1 ) * 8).exec(function (err, showcases) {
-        if(err) return res.status(500).send({
-            code: 1,
-            message: err
-        })
+    console.log(JSON.stringify(req.query));
+    if(req.query.tags){
+    	Showcase.find({ 'tags._id': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1) * 8)
+        .sort('heart.length')
+        .exec(function (err, showcases) {
 
-        return res.status(200).send({
-            code: 0,
-            showcases
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+
+            Showcase.count({ 'tags._id': {$in: req.query.tags}}, function(err, count){
+                if(err) return res.status(500).send({
+                    code: 1,
+                    message: err
+                })
+
+                return res.status(200).send({
+                    code: 0,
+                    page_last: count,
+                    showcases
+                })
+            });            
         })
-    })
+    } else {
+        Showcase.find({ }).limit(8).skip((req.query.page - 1) * 8)
+        .sort('-heartCount')
+        .exec(function (err, showcases) {
+
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+
+            Showcase.count({ }, function(err, count){
+                if(err) return res.status(500).send({
+                    code: 1,
+                    message: err
+                })
+
+                return res.status(200).send({
+                    code: 0,
+                    page_last: count,
+                    showcases
+                })
+            });            
+        })
+    }
 })
-
 
 //create showcase
 router.post('/', function(req,res){
@@ -86,6 +122,31 @@ router.put('/:showcase_id', function(req,res){
         })
     });
 })
+
+//register heart click
+router.post('/:showcase_id/heart',function(req,res){
+    Showcase.findOne({_id: req.params.showcase_id}, function(err,showcase){
+        if(err) return res.status(500).send({
+            code: 1,
+            message: err
+        })
+
+        showcase.hearts.push(req.body)
+        showcase.heartCount++
+        showcase.save(function(err){
+            if(err) return res.status(500).send({
+                code: 1,
+                message: err
+            })
+
+            return res.status(200).send({
+                code: 0,
+                message: 'Successfully registered heart click.',
+            })
+        })
+    })
+})
+
 
 //delete showcase
 router.delete('/:showcase_id', function(req,res){

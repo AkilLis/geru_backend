@@ -9,7 +9,8 @@ var ShowcaseSchema = new Schema({
     ratio: Number,
   },
   created_date: {type:Date, default: Date.now },
-  heart: [{
+  heartCount: {type: Number, default: 0},
+  hearts: [{
     user_id: String,
     created_date: {type:Date, default: Date.now }
   }],
