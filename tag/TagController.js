@@ -169,4 +169,19 @@ router.put('/:tag_id', function(req,res){
     });
 })
 
+//delete tag
+router.delete('/:tag_id', function(req,res){
+  Tag.remove({_id: req.params.tag_id}, function(err, tag) {
+    if (err) return res.status(500).send({
+      code: 1,
+      message: err
+    })
+    return res.status(200).send({
+      code: 0,
+      message: 'Successfully deleted tag.'
+    })
+  })
+
+})
+
 module.exports = router
