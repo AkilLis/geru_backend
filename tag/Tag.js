@@ -3,7 +3,7 @@ var Schema = mongoose.Schema
 
 var TagSchema = new Schema({  
   name: {type: String, index: true},
-  type: String,
+  type: String, // noun - n , verb - v, adjective - a
   cover_url: String,
   category: { 
   	_id: String, 

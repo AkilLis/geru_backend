@@ -15,7 +15,17 @@ router.use(bodyParser.urlencoded({
 
 //get tags
 router.get('/', function (req, res) {
-    Tag.find({ name: new RegExp('^'+req.query.name, "i") }, function (err, tags) {
+    var query = {};
+    if (req.query.tags && req.query.type) {
+        query = { _id: { $nin: req.query.tags}, type: req.query.type }
+    } else if(req.query.type){
+        query = { type: req.query.type }
+    } else if(req.query.name){
+        query = { name: new RegExp('^'+req.query.name, "i") }
+    } else {
+      query = { }
+    }
+    Tag.find(query, function (err, tags) {
         if(err) return res.status(500).send({
             code: 1,
             message: 'Something went wrong when fetching from database.'
@@ -107,33 +117,39 @@ router.post('/', function(req,res){
             code: 1,
             message: err
         })
+        if(req.body.category && req.body.category._id){
+          Category.findOne({_id: req.body.category._id}, function(err,category){
+              if(err) return res.status(500).send({
+                  code: 1,
+                  message: err
+              })
 
-        Category.findOne({_id: req.body.category._id}, function(err,category){
-            if(err) return res.status(500).send({
-                code: 1,
-                message: err
-            })
+              if(!category) return res.status(500).send({
+                  code:1,
+                  message: "There is no category exists.",
+              })
 
-            if(!category) return res.status(500).send({
-                code:1,
-                message: "There is no category exists.",
-            })
+              category.tags.push(tag._id)
+              
+              category.save(function(err) {
+                  if(err) return  {
+                      code: 1,
+                      message: err
+                  }
+              })
 
-            category.tags.push(tag._id)
-            
-            category.save(function(err) {
-                if(err) return  {
-                    code: 1,
-                    message: err
-                }
-            })
+              return res.status(200).send({
+                  code: 0,
+                  message: "Successfully created tag: " + tag.name
+              })
 
-            return res.status(200).send({
-                code: 0,
-                message: "Successfully created tag: " + tag.name
-            })
-
-        })
+          })
+        } else {
+          return res.status(200).send({
+              code: 0,
+              message: "Successfully created tag: " + tag.name
+          })          
+        }
 
     })
     
