@@ -28,29 +28,77 @@ router.get('/', function (req, res) {
     })
 })
 
+function matchComplete(mostSimilar, res, req, isName) {
+   var tagNames = [];
+
+   //console.log(mostSimilar)
+
+   _.forEach(mostSimilar, function(value, key) {
+       if(isName==1)
+           tagNames.push(value.name);
+       else
+           tagNames.push(value.word);
+   })
+
+   console.log(tagNames);
+      
+   var matchNames = [];
+   for( var i=0; i < tagNames.length; i++) {
+       //console.log(tagNames[i]);
+       if(tagNames[i].startsWith(req.query.freetext))
+           matchNames.push(tagNames[i]);
+   }
+       //['123', '123412', '123']
+      
+       //console.log("------------");
+       //console.log(matchNames);
+   return res.status(200).send({
+      code: 0,
+      tags: matchNames.slice(0, 10) ,
+   })
+}
+
+//auto_complete tag
+router.get('/auto_complete', function(req,res){
+   w2v.loadModel( 'simplood.txt', function( error, model ) {
+      var mostSimilar = model.mostSimilar(req.query.tag,20)
+      //console.log(mostSimilar);
+      //var tagNames = [];
+      var tagNames = []//["hat", "hackub2017", "hack", "hacker"];
+      if( !(req.query.tag) || 0 === (req.query.tag).length){
+           Tag.find({ name: new RegExp('^'+req.query.tag, "i") }, function (err, tags) {
+               mostSimilar=tags;
+               matchComplete(mostSimilar, res, req, 1)
+           });
+      } else {
+           matchComplete(mostSimilar, res, req, 0)
+      }
+   });
+})
 
 //suggested tag
 router.get('/suggested', function(req,res){
-	w2v.loadModel( 'simplood.txt', function( error, model ) {
-        var mostSimilar = model.mostSimilar(req.query.tag,20)
-        var tagNames = [];
-        _.forEach(mostSimilar, function(value, key) {
-            tagNames.push(value.word)
-        })
-
-        Tag.find({name: {$in: tagNames}}, function(err,tags){
-            if(err) return res.status(500).send({
-                code: 1,
-                message: err
-            })
-            return res.status(200).send({
-                code: 0,
-                tags
-            })
-        })
-	});
+    w2v.loadModel( 'simplood.txt', function( error, model ) {
+       console.log(req.query)
+       var mostSimilar = model.mostSimilar(req.query.tag, 20)
+       var tagNames = [];
+       _.forEach(mostSimilar, function(value, key) {
+           tagNames.push(value.word)
+       })
+       console.log(tagNames);
+       Tag.find({name: {$in: tagNames}}, function(err,tags){
+           console.log(tags);
+           if(err) return res.status(500).send({
+               code: 1,
+               message: err
+           })
+           return res.status(200).send({
+               code: 0,
+               tags: tags.slice(0, 10) ,
+           })
+       })
+    });
 })
-
 
 //create tag
 router.post('/', function(req,res){
@@ -104,7 +152,5 @@ router.put('/:tag_id', function(req,res){
         })
     });
 })
-
-
 
 module.exports = router
