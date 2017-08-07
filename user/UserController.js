@@ -86,6 +86,20 @@ router.post('/', function(req,res){
     })
 })
 
+//update user
+router.put('/:user_id', function(req,res){
+    User.findOneAndUpdate({_id: req.params.user_id}, req.body, {new: true}, function(err, user) {
+        if (err) return res.status(500).send({
+            code: 1,
+            message: err
+        })
+        return res.status(200).send({
+            code: 0,
+            message: "Successfully updated user: " + user.first_name
+        })
+    });
+})
+
 //save user bookmark
 router.post('/:user_id/bookmark', function(req,res){
 
