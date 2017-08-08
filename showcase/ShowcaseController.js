@@ -29,9 +29,8 @@ router.get('/', function (req, res) {
 
 //get showcases by tag id
 router.get('/tag', function (req, res) {
-    console.log(JSON.stringify(req.query));
     if(req.query.tags){
-    	Showcase.find({ 'tags._id': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1) * 8)
+    	Showcase.find({ 'tags.name': {$in: req.query.tags} }).limit(8).skip((req.query.page - 1) * 8)
         .sort('heart.length')
         .exec(function (err, showcases) {
 
@@ -84,7 +83,7 @@ router.post('/', function(req,res){
     Showcase.create(req.body, function (err, showcase) {
         if (err) return res.status(500).send({
             code: 1,
-            message: "There was a problem adding the information to the database.",
+            message: err,
         })
 
         User.findOne({ _id: req.body.user._id }, function(err, user) {

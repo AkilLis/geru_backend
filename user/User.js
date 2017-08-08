@@ -9,6 +9,7 @@ var UserSchema = new Schema({
   date_of_birth: Date,
   email_address: { type: String, index: { unique: true }},
   is_facebook_auth: Boolean,
+  facebook_id: {},
   is_twitter_auth: Boolean,
   type: String,
   gender: String,
